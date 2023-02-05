@@ -8,7 +8,7 @@ const TransferOwnerShip = () => {
   let FakeProductIdentifierDeployed;
   beforeEach(async () => {
     ({ addr1, owner, FakeProductIdentifierDeployed } = await BeforeEach());
-    await FakeProductIdentifierDeployed.connect(addr1).Subscription({
+    await FakeProductIdentifierDeployed.connect(addr1).subscribe({
       value: convertEtherToWei("0.0001"),
     });
     await FakeProductIdentifierDeployed.connect(addr1).addProduct("Achyut");
@@ -16,15 +16,18 @@ const TransferOwnerShip = () => {
 
   it("Revert when the caller isnot the current owner", async () => {
     await expect(
-      FakeProductIdentifierDeployed.transferOwnerShip(
+      FakeProductIdentifierDeployed.transferOwnership(
         owner.address,
         addr1.address,
         0
       )
-    ).to.be.revertedWithCustomError(FakeProductIdentifierDeployed, "Denied");
+    ).to.be.revertedWithCustomError(
+      FakeProductIdentifierDeployed,
+      "OwnershipTransferDenied"
+    );
   });
   it("The struct should be updated", async () => {
-    await FakeProductIdentifierDeployed.connect(addr1).transferOwnerShip(
+    await FakeProductIdentifierDeployed.connect(addr1).transferOwnership(
       owner.address,
       addr1.address,
       0
@@ -39,15 +42,18 @@ const TransferOwnerShip = () => {
     expect(res[2]).to.equal(owner.address);
     expect(res[3]).to.equal(addr1.address);
 
-    //Now past oewner cannot call the transferownership ....
+    //Now past oewner cannot call the transferOwnership ....
 
     await expect(
-      FakeProductIdentifierDeployed.connect(addr1).transferOwnerShip(
+      FakeProductIdentifierDeployed.connect(addr1).transferOwnership(
         owner.address,
         addr1.address,
         0
       )
-    ).to.be.revertedWithCustomError(FakeProductIdentifierDeployed, "Denied");
+    ).to.be.revertedWithCustomError(
+      FakeProductIdentifierDeployed,
+      "OwnershipTransferDenied"
+    );
   });
 };
 
